@@ -1,0 +1,68 @@
+Debugging Report for sort_words_Selection() Function
+
+[1 mark] Setting up effective breakpoints in VSCode:
+1. Opened VSCode Debug view (Ctrl+Shift+D)
+2. Set breakpoints by clicking in the left margin:
+   - Line 142: Start of sort_words_Selection function
+   - Line 158: First comparison where Bug 1 occurs
+   - Line 166: Swap condition where Bug 2 occurs
+3. Verified breakpoints are active (red dots appear)
+
+[1 mark] Setting up effective variable watches:
+1. In Debug view's WATCH section, added:
+   - words (to monitor array contents)
+   - i (outer loop position)
+   - j (inner loop position)
+   - minIndex (current minimum element index)
+2. Added expression 'words[i]' and 'words[minIndex]' to compare values
+3. Arranged watch window to clearly show all variables
+
+[1 mark] Evidence of Buggy Behavior:
+
+Bug 1 - Incorrect Comparison:
+- Debugger paused at line 158 shows:
+  * VARIABLES window:
+    - i = 0 (points to "programming")
+    - j = 1 (points to "milan")
+    - minIndex = 0
+  * WATCH window shows:
+    - words[i] = "programming" (incorrectly used for comparison)
+    - Should be using words[minIndex] instead
+  * Step-by-step execution shows comparison always using first element
+
+Bug 2 - Incorrect Swap Condition:
+- At line 166 breakpoint:
+  * VARIABLES window shows:
+    - minIndex = 4 (points to "banana")
+    - j = 5 (last element)
+    - i = 0 (current position)
+  * Condition 'minIndex != j' fails to swap when needed
+  * Debug console shows swaps being skipped
+
+[1 mark] Evidence of Fixed Behavior:
+
+1. After fixing Bug 1 (using words[minIndex]):
+   * VARIABLES window shows proper comparison sequence
+   * Watch expressions demonstrate correct minimum finding:
+     - words[minIndex] updates as new minimums are found
+     - Comparison uses current minimum instead of first element
+   * Debug stepping shows correct elements being selected
+
+2. After fixing Bug 2 (comparing with i):
+   * VARIABLES window shows:
+     - Correct swap conditions being evaluated
+     - minIndex properly compared with current position i
+   * Array contents in watch window show proper ordering
+   * Final array shows correct ascending order:
+     {"apple", "banana", "hello", "milan", "programming", "zebra"}
+
+Analysis:
+Bug 1: Using words[i] in comparison meant algorithm always compared against
+      first element instead of current minimum (words[minIndex])
+Bug 2: Comparing minIndex with j instead of i meant swap condition was 
+      checking against loop variable instead of current position
+
+Fix Implementation:
+1. Changed if(my_strcmpOrder(words[i], words[j]) == 1) to
+   if(my_strcmpOrder(words[minIndex], words[j]) == 1)
+2. Changed if(minIndex != j) to if(minIndex != i)
